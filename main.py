@@ -8,9 +8,11 @@ from send_telgram import send_msg
 config = get_config()
 x = config['x']
 y = config['y']
+retry_count = 0
 
 
 def get_graph_items():
+    global retry_count
     url = 'https://api.place.naver.com/graphql'
     header = {
         'content-type': 'application/json',
@@ -26,6 +28,16 @@ def get_graph_items():
     req = requests.post(url=url,
                         headers=header,
                         json=payload)
+    if req.status_code != 200:
+        send_msg(str(req.status_code))
+        retry_count = retry_count + 1
+        if retry_count > 60:
+            send_msg('OFF')
+            exit(-1)
+        return []
+
+    if retry_count > 1:
+        retry_count = retry_count - 1
 
     res = req.json()
 
@@ -38,13 +50,14 @@ def detect_action(id):
 
 
 if __name__ == '__main__':
-    while True:
-        for item in get_graph_items():
-            # if item['id'] == '1721286029':
-            #     detect_action(item['id'])
-            if item['vaccineQuantity']['totalQuantity'] > 0:
-                detect_action(item['id'])
-        sleep(config['term'])
+    get_graph_items()
+    # while True:
+    #     for item in get_graph_items():
+    #         # if item['id'] == '1721286029':
+    #         #     detect_action(item['id'])
+    #         if item['vaccineQuantity']['totalQuantity'] > 0:
+    #             detect_action(item['id'])
+    #     sleep(config['term'])
 
 # https://m.place.naver.com/rest/vaccine?vaccineFilter=used&selected_place_id=13229703
 # url = f'https://m.place.naver.com/rest/vaccine?vaccineFilter=used&x={127.1082207}&y={37.3206381}&selected_place_id=13229703'
