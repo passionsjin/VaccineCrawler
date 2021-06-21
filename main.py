@@ -50,14 +50,14 @@ def detect_action(id):
 
 
 if __name__ == '__main__':
-    get_graph_items()
-    # while True:
-    #     for item in get_graph_items():
-    #         # if item['id'] == '1721286029':
-    #         #     detect_action(item['id'])
-    #         if item['vaccineQuantity']['totalQuantity'] > 0:
-    #             detect_action(item['id'])
-    #     sleep(config['term'])
+    # get_graph_items()
+    while True:
+        for item in get_graph_items():
+            # if item['id'] == '1721286029':
+            #     detect_action(item['id'])
+            if item['vaccineQuantity']['totalQuantity'] > 0:
+                detect_action(item['id'])
+        sleep(config['term'])
 
 # https://m.place.naver.com/rest/vaccine?vaccineFilter=used&selected_place_id=13229703
 # url = f'https://m.place.naver.com/rest/vaccine?vaccineFilter=used&x={127.1082207}&y={37.3206381}&selected_place_id=13229703'
